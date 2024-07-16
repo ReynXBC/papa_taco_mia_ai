@@ -1,19 +1,19 @@
+import threading
 import startup as start
 import worker
-import threading
 
-#day = 1
-#start.StartGame()
-day = 23
+# day = 1
+# start.StartGame()
+DAY = 23
 
-while day <= 30:
-   scheduler_thread = threading.Thread(target=worker.scheduler_worker,name='scheduler thread')
-   scheduler_thread.daemon = True
+while DAY <= 30:
+    scheduler_thread = threading.Thread(target=worker.scheduler_worker, name='scheduler thread')
+    scheduler_thread.daemon = True
 
-   start.StartDay(day)
-   day += 1
-   scheduler_thread.start()
+    start.StartDay(DAY)
+    DAY += 1
+    scheduler_thread.start()
 
-   scheduler_thread.join()
+    scheduler_thread.join()
 
-   print('next day is',day)
+    print('next day is', DAY)

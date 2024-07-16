@@ -32,10 +32,12 @@ def low_priority_task():
 #scheduler.enterabs(time.time() + 3, 1, high_priority_task, (1, ("arg1", "arg2")))
 #scheduler.enterabs(time.time() + 5, 2, low_priority_task, ())'''
 
+
 # Worker thread to run the scheduler
 def scheduler_worker():
     while runner == True:
         scheduler.run()
+
 
 '''# Start the scheduler thread
 scheduler_thread = threading.Thread(target=scheduler_worker)
