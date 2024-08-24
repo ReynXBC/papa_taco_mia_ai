@@ -9,225 +9,222 @@ import startup as start
 import worker
 import time
 
-
 class Section(Enum):
-    Shell = 1
-    Meat = 2
-    Toppings = 3
+   Shell = 1
+   Meat = 2
+   Toppings = 3
 
+SHELL_PATH = './Graphics/Shells'
+MEAT_PATH = './Graphics/Meats'
+TOPPING_PATH = './Graphics/Toppings'
+ORDER_STATION = [740,980]
+TAKE_ORDER = [650,410]
 
-SHELL_PATH = './orders/Shells'
-MEAT_PATH = './orders/Meats'
-TOPPING_PATH = './orders/Toppings'
-ORDER_STATION = [740, 980]
-TAKE_ORDER = [650, 410]
-
-shellDict = {'hard.jpg': grl.Shell.Hard, 'pita.jpg': grl.Shell.Pita, 'soft.jpg': grl.Shell.Soft}
-meatDict = {'chicken.jpg': grl.Meat.Chicken, 'beef.jpg': grl.Meat.Beef, 'steak.jpg': grl.Meat.Steak,
-            'pork.jpg': grl.Meat.Pork}
+shellDict = {'hard.jpg':grl.Shell.Hard,'pita.jpg':grl.Shell.Pita,'soft.jpg':grl.Shell.Soft}
+meatDict = {'chicken.jpg':grl.Meat.Chicken,'beef.jpg':grl.Meat.Beef,'steak.jpg':grl.Meat.Steak,'pork.jpg':grl.Meat.Pork}
 toppingDict = {}
 
 for newitem, count in zip(os.listdir(TOPPING_PATH), range(85)):
-    if count < 5:
-        toppingDict[newitem] = bld.Topping.BBeans
-    elif count < 10:
-        toppingDict[newitem] = bld.Topping.BRice
-    elif count < 15:
-        toppingDict[newitem] = bld.Topping.Cheese
-    elif count < 20:
-        toppingDict[newitem] = bld.Topping.Gaucamole
-    elif count < 25:
-        toppingDict[newitem] = bld.Sauce.Hot
-    elif count < 30:
-        toppingDict[newitem] = bld.Topping.Jalapenos
-    elif count < 35:
-        toppingDict[newitem] = bld.Topping.Lettuce
-    elif count < 40:
-        toppingDict[newitem] = bld.Sauce.Loco
-    elif count < 45:
-        toppingDict[newitem] = bld.Sauce.Mild
-    elif count < 50:
-        toppingDict[newitem] = bld.Sauce.Nacho
-    elif count < 55:
-        toppingDict[newitem] = bld.Topping.Onions
-    elif count < 60:
-        toppingDict[newitem] = bld.Topping.Peppers
-    elif count < 65:
-        toppingDict[newitem] = bld.Topping.PBeans
-    elif count < 70:
-        toppingDict[newitem] = bld.Sauce.Sour
-    elif count < 75:
-        toppingDict[newitem] = bld.Topping.Tomatoes
-    elif count < 80:
-        toppingDict[newitem] = bld.Sauce.Verde
-    elif count < 85:
-        toppingDict[newitem] = bld.Topping.WRice
+   if count < 5:
+      toppingDict[newitem] = bld.Topping.BBeans
+   elif count < 10:
+      toppingDict[newitem] = bld.Topping.BRice
+   elif count < 15:
+      toppingDict[newitem] = bld.Topping.Cheese
+   elif count < 20:
+      toppingDict[newitem] = bld.Topping.Gaucamole
+   elif count < 25:
+      toppingDict[newitem] = bld.Sauce.Hot
+   elif count < 30:
+      toppingDict[newitem] = bld.Topping.Jalapenos
+   elif count < 35:
+      toppingDict[newitem] = bld.Topping.Lettuce
+   elif count < 40:
+      toppingDict[newitem] = bld.Sauce.Loco
+   elif count < 45:
+      toppingDict[newitem] = bld.Sauce.Mild
+   elif count < 50:
+      toppingDict[newitem] = bld.Sauce.Nacho
+   elif count < 55:
+      toppingDict[newitem] = bld.Topping.Onions
+   elif count < 60:
+      toppingDict[newitem] = bld.Topping.Peppers
+   elif count < 65:
+      toppingDict[newitem] = bld.Topping.PBeans
+   elif count < 70:
+      toppingDict[newitem] = bld.Sauce.Sour
+   elif count < 75:
+      toppingDict[newitem] = bld.Topping.Tomatoes
+   elif count < 80:
+      toppingDict[newitem] = bld.Sauce.Verde
+   elif count < 85:
+      toppingDict[newitem] = bld.Topping.WRice
+      
 
-
-# def GetOrderMatrix():
+#def GetOrderMatrix():
 #   matrix = [[None for column in range(10)] for row in range(8)]
 #   orders = pd.DataFrame(matrix)
 #   return orders
 
-def GetOrder(orders, count, image):
-    orders[count - 1] = OrderParse(image, count)
-
+def GetOrder(orders,count,image):
+   orders[count-1] = OrderParse(image, count)
 
 def ImgMatch(image, section):
-    match = None
+   match = None
 
-    if section == Section.Shell:
-        tempDict = {}
+   if section == Section.Shell:
+      tempDict = {}
 
-        for ref in os.listdir(SHELL_PATH):
-            refimage = cv2.imread(SHELL_PATH + '/' + ref)
-            # image = cv2.resize(image, (300,100))
-            # refimage = cv2.resize(refimage, (300,100))
-            mse = np.sum((image - refimage) ** 2) / float(image.shape[0] * refimage.shape[1])
-            tempDict[mse] = ref
-            # print(ref,mse)
+      for ref in os.listdir(SHELL_PATH):
+         refimage = cv2.imread(SHELL_PATH + '/' + ref)
+         #image = cv2.resize(image, (300,100))
+         #refimage = cv2.resize(refimage, (300,100))
+         mse = np.sum((image - refimage) ** 2) / float(image.shape[0] * refimage.shape[1])
+         tempDict[mse] = ref
+         #print(ref,mse)
 
-        lowest = 200000000000000000000000
-        for pair in tempDict.items():
-            if pair[0] < lowest:
-                lowest = pair[0]
-                match = shellDict[pair[1]]
-        lowest = -1
+      lowest = 200000000000000000000000
+      for pair in tempDict.items():
+         if pair[0] < lowest:
+            lowest = pair[0]
+            match = shellDict[pair[1]]
+      lowest = -1
 
-    if section == Section.Meat:
-        tempDict = {}
+   if section == Section.Meat:
+      tempDict = {}
 
-        for ref in os.listdir(MEAT_PATH):
-            refimage = cv2.imread(MEAT_PATH + '/' + ref)
-            # image = cv2.resize(image, (300,100))
-            # refimage = cv2.resize(refimage, (300,100))
-            mse = np.sum((image - refimage) ** 2) / float(image.shape[0] * refimage.shape[1])
-            tempDict[mse] = ref
-            # print(ref,mse)
+      for ref in os.listdir(MEAT_PATH):
+         refimage = cv2.imread(MEAT_PATH + '/' + ref)
+         #image = cv2.resize(image, (300,100))
+         #refimage = cv2.resize(refimage, (300,100))
+         mse = np.sum((image - refimage) ** 2) / float(image.shape[0] * refimage.shape[1])
+         tempDict[mse] = ref
+         #print(ref,mse)
 
-        lowest = 200000000000000000000000
-        for pair in tempDict.items():
-            if pair[0] < lowest:
-                lowest = pair[0]
-                match = meatDict[pair[1]]
-        lowest = -1
+      lowest = 200000000000000000000000
+      for pair in tempDict.items():
+         if pair[0] < lowest:
+            lowest = pair[0]
+            match = meatDict[pair[1]]
+      lowest = -1
+   
+   if section == Section.Toppings: #Might consider a different type of id for this
+      tempDict = {}
 
-    if section == Section.Toppings:  # Might consider a different type of id for this
-        tempDict = {}
+      for ref in os.listdir(TOPPING_PATH):
+         refimage = cv2.imread(TOPPING_PATH + '/' + ref)
+         #image = cv2.resize(image, (300,100))
+         #refimage = cv2.resize(refimage, (300,100))
+         mse = np.sum((image - refimage) ** 2) / float(image.shape[0] * refimage.shape[1])
+         tempDict[mse] = ref
+         #print(ref,mse)
 
-        for ref in os.listdir(TOPPING_PATH):
-            refimage = cv2.imread(TOPPING_PATH + '/' + ref)
-            # image = cv2.resize(image, (300,100))
-            # refimage = cv2.resize(refimage, (300,100))
-            mse = np.sum((image - refimage) ** 2) / float(image.shape[0] * refimage.shape[1])
-            tempDict[mse] = ref
-            # print(ref,mse)
-
-        lowest = 200000000000000000000000
-        for pair in tempDict.items():
-            if pair[0] < lowest:
-                lowest = pair[0]
-                match = toppingDict[pair[1]]
-
-    return match if lowest < 50 else None
-
+      lowest = 200000000000000000000000
+      for pair in tempDict.items():
+         if pair[0] < lowest:
+            lowest = pair[0]
+            match = toppingDict[pair[1]]
+   
+   return match if lowest < 50 else None
 
 def OrderParse(count):
-    # LARGE VERSION
-    orderimage = cv2.imread('./orders/order' + str(count) + '.png')
-    x, y, width, height = 2, 484, 280, 95
-    shellimage = orderimage[y:y + height, x:x + width]
-    x, y, width, height = 2, 384, 280, 95
-    meatimage = orderimage[y:y + height, x:x + width]
-    x, y, width, height = 90, 324, 100, 50
-    toppingimage1 = orderimage[y:y + height, x:x + width]
-    x, y, width, height = 90, 272, 100, 50
-    toppingimage2 = orderimage[y:y + height, x:x + width]
-    x, y, width, height = 90, 220, 100, 50
-    toppingimage3 = orderimage[y:y + height, x:x + width]
-    x, y, width, height = 90, 168, 100, 50
-    toppingimage4 = orderimage[y:y + height, x:x + width]
-    x, y, width, height = 90, 116, 100, 50
-    toppingimage5 = orderimage[y:y + height, x:x + width]
+   
+   #LARGE VERSION
+   orderimage = cv2.imread('./orders/order' + str(count) + '.png')
+   x, y, width, height = 2, 484, 280, 95
+   shellimage = orderimage[y:y+height, x:x+width]
+   x, y, width, height = 2, 384, 280, 95
+   meatimage = orderimage[y:y+height, x:x+width]
+   x, y, width, height = 90, 324, 100, 50
+   toppingimage1 = orderimage[y:y+height, x:x+width]
+   x, y, width, height = 90, 272, 100, 50
+   toppingimage2 = orderimage[y:y+height, x:x+width]
+   x, y, width, height = 90, 220, 100, 50
+   toppingimage3 = orderimage[y:y+height, x:x+width]
+   x, y, width, height = 90, 168, 100, 50
+   toppingimage4 = orderimage[y:y+height, x:x+width]
+   x, y, width, height = 90, 116, 100, 50
+   toppingimage5 = orderimage[y:y+height, x:x+width]
 
-    '''
-    #cv2.imwrite('./Testing/order'+str(count)+'shell'+str(toppingcount)+ '.jpg', shellimage)
-    #toppingcount += 1
-    #cv2.imwrite('./Testing/order'+str(count)+'meat'+str(toppingcount)+'.jpg', meatimage)
-    #toppingcount += 1
-    '''
-    # toppingcount = 0
-    # cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage1)
-    # toppingcount += 1
-    # cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage2)
-    # toppingcount += 1
-    # cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage3)
-    # toppingcount += 1
-    # cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage4)
-    # toppingcount += 1
-    # cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage5)
-    # toppingcount += 1
 
-    # cv2.imshow('sample',toppingimage5)
-    # cv2.waitKey(0)
+   '''
+   #cv2.imwrite('./Testing/order'+str(count)+'shell'+str(toppingcount)+ '.jpg', shellimage)
+   #toppingcount += 1
+   #cv2.imwrite('./Testing/order'+str(count)+'meat'+str(toppingcount)+'.jpg', meatimage)
+   #toppingcount += 1
+   '''
+   #toppingcount = 0
+   #cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage1)
+   #toppingcount += 1
+   #cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage2)
+   #toppingcount += 1
+   #cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage3)
+   #toppingcount += 1
+   #cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage4)
+   #toppingcount += 1
+   #cv2.imwrite('./Testing/order'+str(count)+'topping'+str(toppingcount)+'.png', toppingimage5)
+   #toppingcount += 1
+   
+   #cv2.imshow('sample',toppingimage5)
+   #cv2.waitKey(0)
+   
 
-    order = [count, ImgMatch(shellimage, Section.Shell), ImgMatch(meatimage, Section.Meat),
-             # currentToppings[0],currentToppings[1],currentToppings[2],currentToppings[3],currentToppings[4]]
-             ImgMatch(toppingimage1, Section.Toppings), ImgMatch(toppingimage2, Section.Toppings),
-             ImgMatch(toppingimage3, Section.Toppings), ImgMatch(toppingimage4, Section.Toppings),
-             ImgMatch(toppingimage5, Section.Toppings)]
 
-    return order
+   order = [count, ImgMatch(shellimage,Section.Shell), ImgMatch(meatimage,Section.Meat), 
+            #currentToppings[0],currentToppings[1],currentToppings[2],currentToppings[3],currentToppings[4]]
+            ImgMatch(toppingimage1,Section.Toppings),ImgMatch(toppingimage2,Section.Toppings),ImgMatch(toppingimage3,Section.Toppings),ImgMatch(toppingimage4,Section.Toppings),ImgMatch(toppingimage5,Section.Toppings)]
 
+   return order
 
 def TakeScreenshot(count):
-    x, y, width, height = 1310, 65, 290, 584  # Specify the region to capture
-    screenshot = pag.screenshot(region=(x, y, width, height))
-    screenshot_cv = np.array(screenshot)
-    screenshot_cv = cv2.cvtColor(screenshot_cv, cv2.COLOR_RGB2BGR)
-    cv2.imwrite('./orders/order' + str(count) + '.png', screenshot_cv)
-    order = OrderParse(count)
-    print(order)
-    return order
+   x, y, width, height = 1310, 65, 290, 584  # Specify the region to capture
+   screenshot = pag.screenshot(region=(x, y, width, height))
+   screenshot_cv = np.array(screenshot)
+   screenshot_cv = cv2.cvtColor(screenshot_cv, cv2.COLOR_RGB2BGR)
+   cv2.imwrite('./orders/order'+ str(count) + '.png', screenshot_cv)
+   order = OrderParse(count)
+   print(order)
+   return order
 
+def TakeOrder(count,daytotal,tutorial = None):
+   
+   if not start.gameState == start.State.Order:
+      pag.leftClick(ORDER_STATION[0],ORDER_STATION[1])
+      start.gameState = start.State.Order
+      grl.wait(0.25)
+   
+   start.WaitUntilSign()
+   if count == 1:
+      print('ORDER WAIT CHECK')
+      if tutorial:
+         grl.wait(4.25)
+      else:
+         grl.wait(3.75)
+      pag.leftClick(ORDER_STATION[0],ORDER_STATION[1])
+      grl.wait(0.25)
+   
+   pag.leftClick(TAKE_ORDER[0],TAKE_ORDER[1])
+   start.gameState = start.State.Ordering
+   if count < daytotal:
+      worker.scheduler.enterabs(time.time()+35,3,TakeOrder,[count+1,daytotal])
+   grl.wait(2)
+   start.WaitUntilSign()
+   start.gameState = start.State.Order
 
-def TakeOrder(count, daytotal, tutorial=None):
-    if not start.gameState == start.State.Order:
-        pag.leftClick(ORDER_STATION[0], ORDER_STATION[1])
-        start.gameState = start.State.Order
-        grl.wait(0.25)
+   if not tutorial:
+      order = TakeScreenshot(count)
 
-    start.WaitUntilSign()
-    if count == 1:
-        print('ORDER WAIT CHECK')
-        if tutorial:
-            grl.wait(4.25)
-        else:
-            grl.wait(3.75)
-        pag.leftClick(ORDER_STATION[0], ORDER_STATION[1])
-        grl.wait(0.25)
+   pag.moveTo(bld.BIG_TICKET[0],bld.BIG_TICKET[1])
+   pag.dragTo(bld.TICKET_SLOT[count-1][0],bld.TICKET_SLOT[count-1][1])
 
-    pag.leftClick(TAKE_ORDER[0], TAKE_ORDER[1])
-    start.gameState = start.State.Ordering
-    if count < daytotal:
-        worker.scheduler.enterabs(time.time() + 35, 3, TakeOrder, [count + 1, daytotal])
-    grl.wait(2)
-    start.WaitUntilSign()
-    start.gameState = start.State.Order
-
-    if not tutorial:
-        order = TakeScreenshot(count)
-
-    pag.moveTo(bld.BIG_TICKET[0], bld.BIG_TICKET[1])
-    pag.dragTo(bld.TICKET_SLOT[count - 1][0], bld.TICKET_SLOT[count - 1][1])
-
-    if tutorial:
-        pag.leftClick(grl.GRILL_STATION[0], grl.GRILL_STATION[1])
-        grl.wait(0.25)
-        pag.moveTo(bld.TICKET_SLOT[count - 1][0], bld.TICKET_SLOT[count - 1][1])
-        pag.dragTo(bld.BIG_TICKET[0], bld.BIG_TICKET[1])
-        grl.wait(0.25)
-        order = TakeScreenshot(count)
-        grl.prepcook(order, grillSlot=5, tutorial=tutorial)
-    else:
-        worker.scheduler.enterabs(time.time(), 1, grl.prepcook, [order, grl.GetOpenGrillSlot()])
+   if tutorial:
+      pag.leftClick(grl.GRILL_STATION[0],grl.GRILL_STATION[1])
+      grl.wait(0.25)
+      pag.moveTo(bld.TICKET_SLOT[count-1][0],bld.TICKET_SLOT[count-1][1])
+      pag.dragTo(bld.BIG_TICKET[0],bld.BIG_TICKET[1])
+      grl.wait(0.25)
+      order = TakeScreenshot(count)
+      grl.prepcook(order,grillSlot=5,tutorial=tutorial)
+   else:
+      worker.scheduler.enterabs(time.time(),1,grl.prepcook,[order,grl.GetOpenGrillSlot()])
+      
