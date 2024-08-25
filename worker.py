@@ -21,7 +21,3 @@ worker = []
 def scheduler_worker():
     while runner == True:
         scheduler.run()
-        if worker:
-            worker.sort(key=lambda x: x[0])
-            task = worker.pop(0)
-            task[1](*task[2])
