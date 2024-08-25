@@ -14,6 +14,11 @@ while DAY <= 30:
     DAY += 1
     scheduler_thread.start()
 
+    if worker.runner:
+        worker.sort(key=lambda x: x[0])
+        task = worker.pop(0)
+        task[1](*task[2])
+
     scheduler_thread.join()
 
     print('next day is', DAY)
