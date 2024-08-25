@@ -59,8 +59,7 @@ for newitem, count in zip(os.listdir(TOPPING_PATH), range(85)):
       toppingDict[newitem] = bld.Sauce.Verde
    elif count < 85:
       toppingDict[newitem] = bld.Topping.WRice
-      
-
+   
 #def GetOrderMatrix():
 #   matrix = [[None for column in range(10)] for row in range(8)]
 #   orders = pd.DataFrame(matrix)
@@ -186,6 +185,9 @@ def TakeScreenshot(count):
    print(order)
    return order
 
+def TakeOrderSchedule(count,daytotal,tutorial = None):
+   worker.worker.append([2,TakeOrder,[count,daytotal,tutorial]])
+
 def TakeOrder(count,daytotal,tutorial = None):
    
    if not start.gameState == start.State.Order:
@@ -206,7 +208,7 @@ def TakeOrder(count,daytotal,tutorial = None):
    pag.leftClick(TAKE_ORDER[0],TAKE_ORDER[1])
    start.gameState = start.State.Ordering
    if count < daytotal:
-      worker.scheduler.enterabs(time.time()+35,3,TakeOrder,[count+1,daytotal])
+      worker.scheduler.enterabs(time.time()+35,3,TakeOrderSchedule,[count+1,daytotal])
    grl.wait(2)
    start.WaitUntilSign()
    start.gameState = start.State.Order
@@ -226,5 +228,5 @@ def TakeOrder(count,daytotal,tutorial = None):
       order = TakeScreenshot(count)
       grl.prepcook(order,grillSlot=5,tutorial=tutorial)
    else:
-      worker.scheduler.enterabs(time.time(),1,grl.prepcook,[order,grl.GetOpenGrillSlot()])
+      worker.scheduler.enterabs(time.time(),1,grl.prepcookSchedule,[order,grl.GetOpenGrillSlot()])
       

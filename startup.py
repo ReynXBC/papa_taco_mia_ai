@@ -69,7 +69,7 @@ def StartDay(day):
             print('start confirmed')
             located = True
 
-    worker.scheduler.enterabs(time.time(), 1, ord.TakeOrder, [1, GetCustomerNumber(day)])
+    worker.scheduler.enterabs(time.time(), 1, ord.TakeOrderSchedule, [1, GetCustomerNumber(day)])
     print('start day finished')
     worker.runner = True
 

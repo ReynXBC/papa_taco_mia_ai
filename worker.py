@@ -14,7 +14,14 @@ runner = None
 # Scheduler for managing task execution times
 scheduler = sched.scheduler(time.time, time.sleep)
 
+# List of Priority and Function for a task in format [Priority, Task, Arguements] or in type [float, function, list]
+worker = []
+
 # scheduler which adds the functions to the worker task Queue
 def scheduler_worker():
     while runner == True:
         scheduler.run()
+        if worker:
+            worker.sort(key=lambda x: x[0])
+            task = worker.pop(0)
+            task[1](*task[2])

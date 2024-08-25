@@ -53,7 +53,7 @@ toppingTypeDict = {Sauce.Verde: [350, 330, SLOW_TIME], Sauce.Sour: [435, 330, SL
                    Topping.Onions: [1105, 860, SLOW_TIME], Topping.BRice: [1285, 860, FAST_TIME]}
 
 
-def BuildTopping(order, tutorial=None):
+def BuildTopping(order, completionOrderNumber, tutorial=None):
     '''if not start.gameState == start.State.Build:
        print('changing gameState')
        grl.wait(1)
@@ -61,9 +61,9 @@ def BuildTopping(order, tutorial=None):
        grl.wait(0.25)
        start.gameState = start.State.Build'''
     if tutorial:
-        build(order, 'tutorial')
+        build(order, completionOrderNumber, 'tutorial')
     else:
-        worker.scheduler.enterabs(time.time() + 1, 1, build, [order])
+        build(order, completionOrderNumber)
 
 
 def addTopping(item, tutorial=None):
@@ -95,22 +95,23 @@ def addTopping(item, tutorial=None):
         grl.wait(0.25)
 
 
-def build(order, tutorial=None):
-    buffer = 0
+def build(order, completionOrderNumber, tutorial=None):
+    buffer = 0.1
     for item, count in zip(order, range(len(order))):
         if count > 2:
             if tutorial:
                 addTopping(item, tutorial)
             else:
                 if item:
-                    worker.scheduler.enterabs(time.time() + buffer, 0, addTopping, [item, tutorial])
-                    buffer += toppingTypeDict[item][2]
+                    #worker.scheduler.enterabs(time.time() + buffer, 0, addTopping, [item, tutorial])
+                    worker.worker.append([completionOrderNumber + buffer + 2, addTopping, [item,tutorial]])
+                    buffer += 0.1
 
     if tutorial:
         Serve(order[0], 'tutorial')
     else:
-        worker.scheduler.enterabs(time.time() + buffer, 0, Serve, [order[0]])
-
+        #worker.scheduler.enterabs(time.time() + buffer, 0, Serve, [order[0]])
+        worker.worker.append([completionOrderNumber + 0.9 + 2, Serve, [order[0]]])
 
 def Serve(orderNum, tutorial=None):
     print('serving order# ', orderNum)
