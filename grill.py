@@ -33,6 +33,7 @@ grillSlotDict = {1: [665, 445], 2: [905, 445], 3: [1145, 445], 4: [665, 650], 5:
 meatTypeDict = {Meat.Beef: [662, 270], Meat.Steak: [418, 270], Meat.Chicken: [906, 270], Meat.Pork: [1146, 270]}
 shellTypeDict = {Shell.Hard: [830, 810], Shell.Soft: [1160, 810], Shell.Pita: [470, 810]}
 
+completionOrderNumber = 0
 
 def checkPurchases():
     if not shop.findItem('Extra Burner'):
@@ -78,7 +79,8 @@ def sendToBuildSchedule(grillSlot, shellType, order, tutorial=None):
     worker.worker.append([1,sendToBuild,[grillSlot,shellType,order,tutorial]])
 
 def sendToBuild(grillSlot, shellType, order, tutorial=None):
-    with lock:
+    #with lock:
+        global completionOrderNumber
         if order[0] == 1:
             completionOrderNumber = 0
         print('changing gameState')
@@ -95,6 +97,8 @@ def sendToBuild(grillSlot, shellType, order, tutorial=None):
 
         print("Sending GrillSlot", grillSlot, "to Build")
         wait(0.25)
+        print(order)
+        print(completionOrderNumber)
         completionOrderNumber += 1
         if tutorial:
             bld.BuildTopping(order, completionOrderNumber, tutorial)
@@ -159,19 +163,19 @@ def cook(order, grillSlot, tutorial=None):
         meatType = None
     if meatType == Meat.Beef:
         worker.scheduler.enterabs(time.time() + 30, 1, flipSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 60, 1, sendToBuildSchedule, [grillSlot, shellType, order])
+        worker.scheduler.enterabs(time.time() + 60, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
     elif meatType == Meat.Chicken:
         worker.scheduler.enterabs(time.time() + 27, 1, chopSchedule, [grillSlot])
         worker.scheduler.enterabs(time.time() + 54, 1, flipSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 80, 1, sendToBuildSchedule, [grillSlot, shellType, order])
+        worker.scheduler.enterabs(time.time() + 80, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
     elif meatType == Meat.Pork:
         worker.scheduler.enterabs(time.time() + 27, 1, flipSchedule, [grillSlot])
         worker.scheduler.enterabs(time.time() + 54, 1, chopSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 80, 1, sendToBuildSchedule, [grillSlot, shellType, order])
+        worker.scheduler.enterabs(time.time() + 80, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
     elif meatType == Meat.Steak:
         worker.scheduler.enterabs(time.time() + 30, 1, chopSchedule, [grillSlot])
         worker.scheduler.enterabs(time.time() + 60, 1, chopSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 90, 1, sendToBuildSchedule, [grillSlot, shellType, order])
+        worker.scheduler.enterabs(time.time() + 90, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
     else:
         wait(15)
         flip(grillSlot)

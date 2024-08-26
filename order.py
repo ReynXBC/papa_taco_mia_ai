@@ -228,5 +228,6 @@ def TakeOrder(count,daytotal,tutorial = None):
       order = TakeScreenshot(count)
       grl.prepcook(order,grillSlot=5,tutorial=tutorial)
    else:
-      worker.scheduler.enterabs(time.time(),1,grl.prepcookSchedule,[order,grl.GetOpenGrillSlot()])
+      #worker.scheduler.enterabs(time.time(),1,grl.prepcookSchedule,[order,grl.GetOpenGrillSlot()])
+      worker.worker.append([2,grl.prepcook,[order,grl.GetOpenGrillSlot()]])
       

@@ -113,13 +113,16 @@ def moneyTest():
 
 def getPurchases(money, shop):
     purchases = []
-    priority = shop['Priority'][0]
-    for row in shop.iterrows():
-        row = row[1]
-        if money > row['Cost'] and row['Priority'] == priority:
-            purchases.append(row['Slot'])
-            money -= row['Cost']
-    return purchases
+    try:
+        priority = shop['Priority'][0]
+        for row in shop.iterrows():
+            row = row[1]
+            if money > row['Cost'] and row['Priority'] == priority:
+                purchases.append(row['Slot'])
+                money -= row['Cost']
+        return purchases
+    except:
+        return None
 
 
 def purchaseUpgrades(count):

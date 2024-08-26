@@ -104,7 +104,7 @@ def build(order, completionOrderNumber, tutorial=None):
             else:
                 if item:
                     #worker.scheduler.enterabs(time.time() + buffer, 0, addTopping, [item, tutorial])
-                    worker.worker.append([completionOrderNumber + buffer + 2, addTopping, [item,tutorial]])
+                    worker.worker.append([completionOrderNumber + buffer + 2, addTopping, [item,None]])
                     buffer += 0.1
 
     if tutorial:
