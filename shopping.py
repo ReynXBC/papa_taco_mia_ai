@@ -78,31 +78,32 @@ def buy(purchases):
             time.sleep(0.1)
             if pag.locateOnScreen('./Graphics/upgrade.png'):
                 located = True
-    for item in purchases:
-        next = 0
-        for x in range(item):
-            if x % 6 == 0 and not x == 0:
-                # print('advancing page. x is currently', x)
-                pag.leftClick(NEXT_BUTTON)
-                next += 1
+        for item in purchases:
+            next = 0
+            for x in range(item):
+                if x % 6 == 0 and not x == 0:
+                    # print('advancing page. x is currently', x)
+                    pag.leftClick(NEXT_BUTTON)
+                    next += 1
+                    time.sleep(0.25)
+                if x + 1 == item:
+                    pag.leftClick(itemSlotDict[x % 6])
+                    print('Clicking item slot', x % 6, 'item is', item)
+                    time.sleep(0.25)
+            for x in range(next):
+                # print('returning to start', x+1)
+                pag.leftClick(PREV_BUTTON)
                 time.sleep(0.25)
-            if x + 1 == item:
-                pag.leftClick(itemSlotDict[x % 6])
-                print('Clicking item slot', x % 6, 'item is', item)
-                time.sleep(0.25)
-        for x in range(next):
-            # print('returning to start', x+1)
-            pag.leftClick(PREV_BUTTON)
-            time.sleep(0.25)
 
 
 def updateShop(purchases, shop):
-    for item in purchases:
-        shop.drop(shop[shop['Slot'] == item].index, inplace=True)
-        for i, row in shop.iterrows():
-            if row['Slot'] >= item:
-                shop.at[i, 'Slot'] -= 1
-                print(row)
+    if purchases:
+        for item in purchases:
+            shop.drop(shop[shop['Slot'] == item].index, inplace=True)
+            for i, row in shop.iterrows():
+                if row['Slot'] >= item:
+                    shop.at[i, 'Slot'] -= 1
+                    print(row)
     print(shop)
     return shop
 

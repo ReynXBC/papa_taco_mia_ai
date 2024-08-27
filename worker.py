@@ -21,3 +21,4 @@ worker = []
 def scheduler_worker():
     while runner == True:
         scheduler.run()
+        time.sleep(0.1)
