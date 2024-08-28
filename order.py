@@ -207,6 +207,7 @@ def TakeOrder(count,daytotal,tutorial = None):
    
    pag.leftClick(TAKE_ORDER[0],TAKE_ORDER[1])
    start.gameState = start.State.Ordering
+   print(count,daytotal)
    if count < daytotal:
       worker.scheduler.enterabs(time.time()+35,3,TakeOrderSchedule,[count+1,daytotal])
    grl.wait(2)

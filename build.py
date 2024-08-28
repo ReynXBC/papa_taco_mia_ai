@@ -42,6 +42,8 @@ BUILD_STATION = [1180, 980]
 SLOW_TIME = 3
 FAST_TIME = 1.5
 
+tut2 = False
+
 toppingTypeDict = {Sauce.Verde: [350, 330, SLOW_TIME], Sauce.Sour: [435, 330, SLOW_TIME],
                    Sauce.Hot: [520, 330, SLOW_TIME], Sauce.Nacho: [1075, 330, SLOW_TIME],
                    Sauce.Mild: [1170, 330, SLOW_TIME],
@@ -67,6 +69,7 @@ def BuildTopping(order, completionOrderNumber, tutorial=None):
 
 
 def addTopping(item, tutorial=None):
+    global tut2
     if item:
         if start.gameState != start.State.Build:
             print('changing gameState')
@@ -82,16 +85,15 @@ def addTopping(item, tutorial=None):
         if not tutorial:
             pag.moveTo(END_POUR[0], END_POUR[1], duration=toppingTypeDict[item][2])
         else:
-            try:
-                tut2 == tutorial
+            if tut2:
+                print("IT WORKING")
                 pag.moveTo(END_POUR[0], END_POUR[1],
                            duration=(toppingTypeDict[item][2] - 0.25) if toppingTypeDict[item][2] == FAST_TIME else (
                            toppingTypeDict[item][2]))
-            except:
+            else:
                 pag.moveTo(END_POUR[0], END_POUR[1],
                            duration=(toppingTypeDict[item][2] + 2) if toppingTypeDict[item][2] == FAST_TIME else (
                            toppingTypeDict[item][2]))
-                tut2 = True
         grl.wait(0.25)
 
 
@@ -114,6 +116,9 @@ def build(order, completionOrderNumber, tutorial=None):
         worker.worker.append([completionOrderNumber + 0.9 + 2, Serve, [order[0]]])
 
 def Serve(orderNum, tutorial=None):
+    if tutorial:
+        global tut2
+        tut2 = True
     print('serving order# ', orderNum)
     if not start.gameState == start.State.Build:
         print('changing gameState')
@@ -132,7 +137,7 @@ def Serve(orderNum, tutorial=None):
     else:
         pag.moveTo(TICKET_SLOT[orderNum - 1][0], TICKET_SLOT[orderNum - 1][1])
         pag.dragTo(SERVE[0], SERVE[1])
-    grl.wait(0.5)
+    grl.wait(2)
     end = start.WaitUntilServe()
     if not tutorial:
         grl.wait(0.5)

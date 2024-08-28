@@ -29,7 +29,7 @@ def GetCustomerNumber(day):
         return 1
     elif day <= 3:
         return 4
-    elif day <= 8:
+    elif day <= 7:
         return 5
     elif day <= 11:
         return 6
@@ -103,7 +103,7 @@ def WaitUntilServe():
     print('waiting for serve end')
     located = False
     while not located:
-        if pag.locateOnScreen('./Graphics/Trashhandle.jpg'):
+        if pag.locateOnScreen('./Graphics/Trashhandle.jpg', confidence=0.995):
             located = True
             return False
         if pag.locateOnScreen('./Graphics/serviceimage.jpg', confidence=0.995):
@@ -122,7 +122,7 @@ def CheckOpen():
 def EndDay():
     print('ending day')
     worker.runner = False
-    grl.wait(0.25)
+    grl.wait(15)
     pag.leftClick(960, 980)
     grl.wait(10)
 
@@ -139,5 +139,7 @@ def tutorial():
     WaitUntilSign()
 
     ord.TakeOrder(1, 1, 'tutorial')
+    grl.wait(1)
     ord.TakeOrder(1, 1, 'tutorial')
+    grl.wait(10)
     EndDay()

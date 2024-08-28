@@ -98,12 +98,19 @@ def buy(purchases):
 
 def updateShop(purchases, shop):
     if purchases:
-        for item in purchases:
+        # Sort purchases in descending order to avoid indexing issues
+        sorted_purchases = sorted(purchases, reverse=True)
+        
+        for item in sorted_purchases:
+            # Remove the purchased item
             shop.drop(shop[shop['Slot'] == item].index, inplace=True)
-            for i, row in shop.iterrows():
-                if row['Slot'] >= item:
-                    shop.at[i, 'Slot'] -= 1
-                    print(row)
+            
+            # Update slots for remaining items
+            shop.loc[shop['Slot'] > item, 'Slot'] -= 1
+
+        # Reset index if needed
+        shop.reset_index(drop=True, inplace=True)
+    
     print(shop)
     return shop
 
