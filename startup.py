@@ -23,7 +23,6 @@ class State(Enum):
 
 gameState = State.Overnight
 
-
 def GetCustomerNumber(day):
     if day <= 1:
         return 1
@@ -68,6 +67,17 @@ def StartDay(day):
         if pag.locateOnScreen('./Graphics/open.jpg'):
             print('start confirmed')
             located = True
+
+    if day >= 40:
+        print('changing to Royal Crown')
+    elif day >= 29: 
+        print('changing to Viking Helmet')
+    elif day >= 20:
+        print('changing to Chef Hat')
+    elif day >= 13:
+        print('changing to Sombrero')
+    else:
+        print('Changing to Taco Hat')
 
     worker.scheduler.enterabs(time.time(), 1, ord.TakeOrderSchedule, [1, GetCustomerNumber(day)])
     print('start day finished')
