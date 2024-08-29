@@ -122,15 +122,24 @@ def moneyTest():
 def getPurchases(money, shop):
     purchases = []
     try:
-        priority = shop['Priority'][0]
-        for row in shop.iterrows():
-            row = row[1]
-            if money > row['Cost'] and row['Priority'] == priority:
-                purchases.append(row['Slot'])
-                money -= row['Cost']
+        # Sort the shop by Priority (ascending) and Cost (ascending)
+        sorted_shop = shop.sort_values(['Priority', 'Cost'])
+        
+        # Iterate through all priority levels
+        for priority in sorted(shop['Priority'].unique()):
+            priority_items = sorted_shop[sorted_shop['Priority'] == priority]
+            
+            # Try to purchase items of the current priority
+            for _, row in priority_items.iterrows():
+                if money >= row['Cost']:
+                    purchases.append(row['Slot'])
+                    money -= row['Cost']
+        
         return purchases
-    except:
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return None
+
 
 
 def purchaseUpgrades(count):
