@@ -5,9 +5,12 @@ import time
 
 #DAY = 1
 #start.StartGame()
-DAY = 11
+#DAY = 2
 
-while DAY <= 11:
+#USE THIS ONE TO CHANGE THE DAY
+DAY = 60
+
+while DAY <= 61:
     scheduler_thread = threading.Thread(target=worker.scheduler_worker, name='scheduler thread')
     scheduler_thread.daemon = True
 

@@ -209,7 +209,7 @@ def TakeOrder(count,daytotal,tutorial = None):
    start.gameState = start.State.Ordering
    print(count,daytotal)
    if count < daytotal:
-      worker.scheduler.enterabs(time.time()+35,3,TakeOrderSchedule,[count+1,daytotal])
+      worker.scheduler.enterabs(time.time()+37,3,TakeOrderSchedule,[count+1,daytotal])
    grl.wait(2)
    start.WaitUntilSign()
    start.gameState = start.State.Order

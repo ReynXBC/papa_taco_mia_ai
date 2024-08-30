@@ -30,7 +30,7 @@ def GetCustomerNumber(day):
         return 4
     elif day <= 7:
         return 5
-    elif day <= 11:
+    elif day <= 10:
         return 6
     elif day <= 14:
         return 7
@@ -67,17 +67,9 @@ def StartDay(day):
         if pag.locateOnScreen('./Graphics/open.jpg'):
             print('start confirmed')
             located = True
-
-    if day >= 40:
-        print('changing to Royal Crown')
-    elif day >= 29: 
-        print('changing to Viking Helmet')
-    elif day >= 20:
-        print('changing to Chef Hat')
-    elif day >= 13:
-        print('changing to Sombrero')
-    else:
-        print('Changing to Taco Hat')
+    
+    if day == 60 or day == 40 or day == 30 or day == 20 or day == 10 or day == 80:
+        changeHat()
 
     worker.scheduler.enterabs(time.time(), 1, ord.TakeOrderSchedule, [1, GetCustomerNumber(day)])
     print('start day finished')
@@ -91,6 +83,15 @@ def WaitUntilOpen():
         located = True
         if not pag.locateOnScreen('./Graphics/open.jpg'):
             located = False
+
+
+def changeHat():
+    time.sleep(0.5)
+    pag.click(1510,985)
+    time.sleep(0.5)
+    pag.click(1075,315)
+    time.sleep(0.5)
+    pag.click(950,950)
 
 
 def WaitUntilSign():

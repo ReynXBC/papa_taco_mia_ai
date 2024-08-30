@@ -57,9 +57,9 @@ def getMoney():
     screenshot_cv = cv2.cvtColor(screenshot_cv, cv2.COLOR_RGB2BGR)
     # cv2.imshow('sample',screenshot_cv)
     # cv2.waitKey(0)
-    cv2.imwrite('./Graphics/money.png', screenshot_cv)
+    cv2.imwrite('./orders/money.png', screenshot_cv)
     pt.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    money = pt.image_to_string(Image.open('./Graphics/money.png'), config='--psm 7')
+    money = pt.image_to_string(Image.open('./orders/money.png'), config='--psm 7')
     money = re.sub(r'[^\d.]', '', money)
     try:
         money = float(money)
@@ -126,14 +126,20 @@ def getPurchases(money, shop):
         sorted_shop = shop.sort_values(['Priority', 'Cost'])
         
         # Iterate through all priority levels
-        for priority in sorted(shop['Priority'].unique()):
+        for priority in sorted(sorted_shop['Priority'].unique()):
             priority_items = sorted_shop[sorted_shop['Priority'] == priority]
             
-            # Try to purchase items of the current priority
-            for _, row in priority_items.iterrows():
-                if money >= row['Cost']:
+            # Calculate total cost for all items in this priority
+            total_cost = priority_items['Cost'].sum()
+            
+            # If we can afford all items in this priority, buy them
+            if money >= total_cost:
+                for _, row in priority_items.iterrows():
                     purchases.append(row['Slot'])
                     money -= row['Cost']
+            else:
+                # If we can't afford all items in this priority, stop here
+                break
         
         return purchases
     except Exception as e:
