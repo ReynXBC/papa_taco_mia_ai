@@ -10,7 +10,7 @@ DAY = 2
 #USE THIS ONE TO CHANGE THE DAY
 #DAY = 7
 
-while DAY <= 20:
+while DAY <= 50:
     scheduler_thread = threading.Thread(target=worker.scheduler_worker, name='scheduler thread')
     scheduler_thread.daemon = True
 

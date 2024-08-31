@@ -124,7 +124,9 @@ def getPurchases(money, shop):
         
     sorted_shop = shop.sort_values(['Priority', 'Cost'])
     
-    for item in sorted_shop.iterrows():
+    available_items = sorted_shop.to_dict('records')
+
+    for item in available_items:
         if money >= item['Cost']:
             # Buy this item
             purchases.append(item['Slot'])

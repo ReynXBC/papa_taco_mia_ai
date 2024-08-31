@@ -173,8 +173,8 @@ def tutorial():
     gameState = State.Order
     WaitUntilSign()
 
-    ord.TakeOrder(1, 1, 'tutorial')
+    ord.TakeOrder(1, 'tutorial')
     grl.wait(1)
-    ord.TakeOrder(1, 1, 'tutorial')
+    ord.TakeOrder(1, 'tutorial')
     grl.wait(10)
     EndDay()

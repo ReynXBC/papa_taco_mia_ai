@@ -215,9 +215,9 @@ def TakeOrder(count,tutorial = None):
       pag.leftClick(TAKE_ORDER[0],TAKE_ORDER[1])
       start.gameState = start.State.Ordering
 
-      if count < 8:
+      if count < 8 and not tutorial:
          worker.scheduler.enterabs(time.time()+37,3,TakeOrderSchedule,[count+1])
-         
+
       grl.wait(2)
       start.WaitUntilSign()
       start.gameState = start.State.Order
