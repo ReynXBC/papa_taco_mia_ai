@@ -185,10 +185,10 @@ def TakeScreenshot(count):
    print(order)
    return order
 
-def TakeOrderSchedule(count,daytotal,tutorial = None):
-   worker.worker.append([2,TakeOrder,[count,daytotal,tutorial]])
+def TakeOrderSchedule(count,tutorial = None):
+   worker.worker.append([2,TakeOrder,[count,tutorial]])
 
-def TakeOrder(count,daytotal,tutorial = None):
+def TakeOrder(count,tutorial = None):
    
    if not start.gameState == start.State.Order:
       pag.leftClick(ORDER_STATION[0],ORDER_STATION[1])
@@ -205,30 +205,38 @@ def TakeOrder(count,daytotal,tutorial = None):
       pag.leftClick(ORDER_STATION[0],ORDER_STATION[1])
       grl.wait(0.25)
    
-   pag.leftClick(TAKE_ORDER[0],TAKE_ORDER[1])
-   start.gameState = start.State.Ordering
-   print(count,daytotal)
-   if count < daytotal:
-      worker.scheduler.enterabs(time.time()+37,3,TakeOrderSchedule,[count+1,daytotal])
-   grl.wait(2)
-   start.WaitUntilSign()
-   start.gameState = start.State.Order
+   customer = False
+   for x in range(10):
+      if pag.locateOnScreen('./Graphics/orderButton.png',confidence=0.9):
+         customer = True
 
-   if not tutorial:
-      order = TakeScreenshot(count)
+   if customer:
 
-   pag.moveTo(bld.BIG_TICKET[0],bld.BIG_TICKET[1])
-   pag.dragTo(bld.TICKET_SLOT[count-1][0],bld.TICKET_SLOT[count-1][1])
+      pag.leftClick(TAKE_ORDER[0],TAKE_ORDER[1])
+      start.gameState = start.State.Ordering
 
-   if tutorial:
-      pag.leftClick(grl.GRILL_STATION[0],grl.GRILL_STATION[1])
-      grl.wait(0.25)
-      pag.moveTo(bld.TICKET_SLOT[count-1][0],bld.TICKET_SLOT[count-1][1])
-      pag.dragTo(bld.BIG_TICKET[0],bld.BIG_TICKET[1])
-      grl.wait(0.25)
-      order = TakeScreenshot(count)
-      grl.prepcook(order,grillSlot=5,tutorial=tutorial)
-   else:
-      #worker.scheduler.enterabs(time.time(),1,grl.prepcookSchedule,[order,grl.GetOpenGrillSlot()])
-      worker.worker.append([2,grl.prepcook,[order,grl.GetOpenGrillSlot()]])
+      if count < 8:
+         worker.scheduler.enterabs(time.time()+37,3,TakeOrderSchedule,[count+1])
+         
+      grl.wait(2)
+      start.WaitUntilSign()
+      start.gameState = start.State.Order
+
+      if not tutorial:
+         order = TakeScreenshot(count)
+
+      pag.moveTo(bld.BIG_TICKET[0],bld.BIG_TICKET[1])
+      pag.dragTo(bld.TICKET_SLOT[count-1][0],bld.TICKET_SLOT[count-1][1])
+
+      if tutorial:
+         pag.leftClick(grl.GRILL_STATION[0],grl.GRILL_STATION[1])
+         grl.wait(0.25)
+         pag.moveTo(bld.TICKET_SLOT[count-1][0],bld.TICKET_SLOT[count-1][1])
+         pag.dragTo(bld.BIG_TICKET[0],bld.BIG_TICKET[1])
+         grl.wait(0.25)
+         order = TakeScreenshot(count)
+         grl.prepcook(order,grillSlot=5,tutorial=tutorial)
+      else:
+         #worker.scheduler.enterabs(time.time(),1,grl.prepcookSchedule,[order,grl.GetOpenGrillSlot()])
+         worker.worker.append([2,grl.prepcook,[order,grl.GetOpenGrillSlot()]])
       

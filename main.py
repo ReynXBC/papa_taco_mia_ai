@@ -3,14 +3,14 @@ import startup as start
 import worker
 import time
 
-#DAY = 1
-#start.StartGame()
-#DAY = 2
+DAY = 1
+start.StartGame()
+DAY = 2
 
 #USE THIS ONE TO CHANGE THE DAY
-DAY = 60
+#DAY = 7
 
-while DAY <= 61:
+while DAY <= 20:
     scheduler_thread = threading.Thread(target=worker.scheduler_worker, name='scheduler thread')
     scheduler_thread.daemon = True
 

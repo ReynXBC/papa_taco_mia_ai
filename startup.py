@@ -6,6 +6,11 @@ import worker as worker
 import time
 import order as ord
 import build as bld
+import numpy as np
+import cv2
+import pytesseract as pt
+import re
+from PIL import Image
 
 
 class State(Enum):
@@ -23,20 +28,38 @@ class State(Enum):
 
 gameState = State.Overnight
 
-def GetCustomerNumber(day):
-    if day <= 1:
-        return 1
-    elif day <= 3:
-        return 4
-    elif day <= 7:
-        return 5
-    elif day <= 10:
-        return 6
-    elif day <= 14:
-        return 7
-    else:
-        return 8
+numberOfCustomers = [4,4,4,5,5,5,6,6,7,7,8]
 
+'''
+def GetCustomerNumber(rank):
+    if rank >= len(numberOfCustomers):
+        rank = (len(numberOfCustomers))
+    return numberOfCustomers[rank-1]
+
+def getRank():
+    x, y, width, height = 820, 300, 280, 145  # Specify the region to capture
+    screenshot = pag.screenshot(region=(x, y, width, height))
+    screenshot_cv = np.array(screenshot)
+    #cv2.imshow('image',screenshot_cv)
+    #cv2.waitKey(0)
+    cv2.imwrite('./orders/rank.png', screenshot_cv)
+    rank = cv2.cvtColor(screenshot_cv, cv2.COLOR_BGR2GRAY)
+    (h, w) = rank.shape[:2]
+    rank = cv2.resize(rank, (w * 2, h * 2))
+    rank = cv2.copyMakeBorder(rank, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=255)
+    rank = cv2.adaptiveThreshold(rank, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 81, 12)
+    #cv2.imshow('image',rank)
+    #cv2.waitKey(0)
+    pt.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    rank = pt.image_to_string(rank, config="digits") 
+    rank = pt.image_to_string(Image.open('./orders/rank.png'), config='--psm 7')
+    rank = re.sub(r'[^\d.]', '', rank)
+    try:
+        rank = int(rank)
+        return rank
+    except:
+        return 100000
+'''    
 
 def StartGame():
     print('starting game')
@@ -53,6 +76,7 @@ def StartGame():
 
 
 def StartDay(day):
+
     shop.purchaseUpgrades(day)
 
     print('starting day')
@@ -71,7 +95,7 @@ def StartDay(day):
     if day == 60 or day == 40 or day == 30 or day == 20 or day == 10 or day == 80:
         changeHat()
 
-    worker.scheduler.enterabs(time.time(), 1, ord.TakeOrderSchedule, [1, GetCustomerNumber(day)])
+    worker.scheduler.enterabs(time.time(), 1, ord.TakeOrderSchedule, [1])
     print('start day finished')
     worker.runner = True
 
