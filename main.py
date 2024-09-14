@@ -2,17 +2,33 @@ import threading
 import startup as start
 import worker
 import time
+import pandas as pd
+
+log = pd.DataFrame(columns=['Day','Money','Shop Items Remaining','Customer Points', 'Rank', '0-Star', '1-Star', '2-Star', '3-Star'])
 
 DAY = 1
 start.StartGame()
 DAY = 2
 
-#USE THIS ONE TO CHANGE THE DAY
-#DAY = 7
+daylog = [DAY-1, start.GetMoney(), start.GetShopCount(DAY-1), start.GetCustomerPoints(), 
+              start.GetRank(start.GetCustomerPoints()), start.ord.GetStarCount(0), 
+              start.ord.GetStarCount(1), start.ord.GetStarCount(2), start.ord.GetStarCount(3)]
+print(daylog)
+log.loc[len(log)] = daylog
 
-while DAY <= 50:
+#USE THIS ONE TO CHANGE THE DAY
+#DAY = 16
+
+if DAY > 2:
+    start.ord.LoadDict()
+
+while DAY <= 2:
+    daylog = []
+
     scheduler_thread = threading.Thread(target=worker.scheduler_worker, name='scheduler thread')
     scheduler_thread.daemon = True
+    
+    currentDay = DAY
 
     start.StartDay(DAY)
     DAY += 1
@@ -29,3 +45,15 @@ while DAY <= 50:
     scheduler_thread.join()
 
     print('next day is', DAY)
+    daylog = [currentDay, start.GetMoney(), start.GetShopCount(currentDay), start.GetCustomerPoints(), 
+              start.GetRank(start.GetCustomerPoints()), start.ord.GetStarCount(0), 
+              start.ord.GetStarCount(1), start.ord.GetStarCount(2), start.ord.GetStarCount(3)]
+    print(daylog)
+    log.loc[len(log)] = daylog
+
+    start.ord.SaveDict()
+
+print(log)
+
+with pd.ExcelWriter('./data.xlsx', mode="a", engine="openpyxl", if_sheet_exists="replace") as writer:
+    log.to_excel(writer, sheet_name=str(currentDay), index=False, header=True, startrow=0)

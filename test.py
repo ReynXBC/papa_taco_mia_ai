@@ -5,6 +5,10 @@ import cv2
 import pyautogui as pag
 import numpy as np
 import time
+import order
+import pytesseract as pt
+import re
+from PIL import Image
 
 '''NextPurchase = pd.read_excel('./tacomia.xlsx',sheet_name='Sheet1',header=0)
 
@@ -21,9 +25,11 @@ print(NextPurchase)'''
 #cv2.imwrite('./Graphics/orderButton.png', screenshot_cv)
 
 
-customer = False
-for x in range(10):
-   if pag.locateOnScreen('./Graphics/orderButton.png',confidence=0.9):
-      customer = True
-print(customer)
+#customer = False
+#for x in range(10):
+#   if pag.locateOnScreen('./Graphics/orderButton.png',confidence=0.9):
+#      customer = True
+#print(customer)
+#
 
+print(order.TakeNameScreenShot())

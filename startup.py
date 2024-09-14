@@ -11,6 +11,8 @@ import cv2
 import pytesseract as pt
 import re
 from PIL import Image
+import easyocr
+import torch
 
 
 class State(Enum):
@@ -28,7 +30,9 @@ class State(Enum):
 
 gameState = State.Overnight
 
-numberOfCustomers = [4,4,4,5,5,5,6,6,7,7,8]
+currentCustomerPoints = 0
+
+RANKMULTIPLIER = 150
 
 '''
 def GetCustomerNumber(rank):
@@ -152,12 +156,57 @@ def CheckOpen():
         return True
     else:
         return False
+    
+def GetRank(customerPoints):
+    rank = 1
+    rankThreshold = 0
+    
+    while True:
+        nextThreshold = rankThreshold + (rank + 1) * RANKMULTIPLIER
+        if customerPoints < nextThreshold:
+            break
+        rank += 1
+        rankThreshold = nextThreshold
+    
+    return rank
 
+def GetCustomerPoints():
+    return currentCustomerPoints
+
+def GetCustomerPointsNow():
+    x, y, width, height = 1150, 367, 350, 40  # Specify the region to capture
+    screenshot = pag.screenshot(region=(x, y, width, height))
+    screenshot_cv = np.array(screenshot)
+    screenshot_cv = cv2.cvtColor(screenshot_cv, cv2.COLOR_RGB2GRAY)
+    screenshot_cv = cv2.threshold(screenshot_cv,180,255,cv2.THRESH_BINARY)
+    #cv2.imshow('sample',screenshot_cv[1])
+    #cv2.waitKey(0)
+    cv2.imwrite('./temp/points.png', screenshot_cv[1])
+    #pt.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    #customerPoints = pt.image_to_string(Image.open('./temp/points.png'), config='--oem 1 --psm 7')
+    reader = easyocr.Reader(['en'])
+    customerPoints = reader.readtext('./temp/points.png')
+    customerPoints = re.sub(r'[^\d..]', '', customerPoints[0][1])
+    try:
+        return int(customerPoints)
+    except:
+        return -1
+
+def InitCustomerDict():
+    ord.InitCustomerDict()
+
+def GetMoney():
+    return shop.getMoney()
+
+def GetShopCount(day):
+    return len(shop.getShop(day))
 
 def EndDay():
+    global currentCustomerPoints
     print('ending day')
     worker.runner = False
     grl.wait(15)
+    currentCustomerPoints = GetCustomerPointsNow()
     pag.leftClick(960, 980)
     grl.wait(10)
 

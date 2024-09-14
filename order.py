@@ -8,6 +8,9 @@ import os
 import startup as start
 import worker
 import time
+import easyocr
+import json
+import torch
 
 class Section(Enum):
    Shell = 1
@@ -60,10 +63,41 @@ for newitem, count in zip(os.listdir(TOPPING_PATH), range(85)):
    elif count < 85:
       toppingDict[newitem] = bld.Topping.WRice
    
-#def GetOrderMatrix():
-#   matrix = [[None for column in range(10)] for row in range(8)]
-#   orders = pd.DataFrame(matrix)
-#   return orders
+customerStarDict = {}
+
+def SaveDict():
+    global customerStarDict
+    with open('./temp/customerStarDict.json', 'w') as f:
+        json.dump(customerStarDict, f)
+
+def LoadDict():
+    with open('./temp/customerStarDict.json', 'r') as f:
+        return json.load(f)
+
+def GetStarCount(star):
+   starcount = 0
+   if star == 0:
+      threshold = 1 
+      max = 5
+   elif star == 1:
+      threshold = 5
+      max = 10
+   elif star == 2:
+      threshold = 10
+      max = 15
+   elif star == 3:
+      threshold = 15
+      
+   global customerStarDict
+   for customer, visits in zip(customerStarDict.keys(), customerStarDict.values()):
+      if star == 3:
+         if visits >= threshold:
+            starcount += 1
+      elif visits >= threshold and visits < max:
+         starcount += 1
+   
+   return starcount
+
 
 def GetOrder(orders,count,image):
    orders[count-1] = OrderParse(image, count)
@@ -185,6 +219,43 @@ def TakeScreenshot(count):
    print(order)
    return order
 
+def InitCustomerDict():
+   pass
+
+def TakeNameScreenShot():
+   x, y, width, height = 845, 710, 400, 55  # Specify the region to capture
+   screenshot = pag.screenshot(region=(x, y, width, height))
+   screenshot_cv = np.array(screenshot)
+   screenshot_cv = cv2.cvtColor(screenshot_cv, cv2.COLOR_RGB2GRAY)
+   screenshot_cv = cv2.threshold(screenshot_cv,180,255,cv2.THRESH_BINARY)
+   #cv2.imshow('sample',screenshot_cv[1])
+   #cv2.waitKey(0)
+   cv2.imwrite('./temp/name.png', screenshot_cv[1])
+
+   reader = easyocr.Reader(['en'])
+   name = reader.readtext('./temp/name.png')
+
+   #pt.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+   #name = pt.image_to_string(Image.open('./temp/name.png'), config='--psm 7')
+   if name[0][1] == "DORDU":
+      name = "RoBBY"
+   else:
+      name = name[0][1]
+
+   try:
+      return name
+   except:
+      return None
+
+def GetCustomer():
+   global customerStarDict
+   name = TakeNameScreenShot()
+   if name != 1:
+      try:
+         customerStarDict[name] = customerStarDict[name] + 1
+      except:
+         customerStarDict[name] = 1
+
 def TakeOrderSchedule(count,tutorial = None):
    worker.worker.append([2,TakeOrder,[count,tutorial]])
 
@@ -218,7 +289,9 @@ def TakeOrder(count,tutorial = None):
       if count < 8 and not tutorial:
          worker.scheduler.enterabs(time.time()+37,3,TakeOrderSchedule,[count+1])
 
-      grl.wait(2)
+      grl.wait(1)
+      GetCustomer()
+      #grl.wait(1)
       start.WaitUntilSign()
       start.gameState = start.State.Order
 
