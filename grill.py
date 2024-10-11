@@ -162,20 +162,20 @@ def cook(order, grillSlot, tutorial=None):
     if tutorial:
         meatType = None
     if meatType == Meat.Beef:
-        worker.scheduler.enterabs(time.time() + 30, 1, flipSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 60, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
+        worker.scheduler.append([time.time() + 30, flipSchedule, [grillSlot]])
+        worker.scheduler.append([time.time() + 60, sendToBuildSchedule, [grillSlot, shellType, order, None]])
     elif meatType == Meat.Chicken:
-        worker.scheduler.enterabs(time.time() + 27, 1, chopSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 54, 1, flipSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 80, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
+        worker.scheduler.append([time.time() + 27, chopSchedule, [grillSlot]])
+        worker.scheduler.append([time.time() + 54, flipSchedule, [grillSlot]])
+        worker.scheduler.append([time.time() + 80, sendToBuildSchedule, [grillSlot, shellType, order, None]])
     elif meatType == Meat.Pork:
-        worker.scheduler.enterabs(time.time() + 27, 1, flipSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 54, 1, chopSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 80, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
+        worker.scheduler.append([time.time() + 27, flipSchedule, [grillSlot]])
+        worker.scheduler.append([time.time() + 54, chopSchedule, [grillSlot]])
+        worker.scheduler.append([time.time() + 80, sendToBuildSchedule, [grillSlot, shellType, order, None]])
     elif meatType == Meat.Steak:
-        worker.scheduler.enterabs(time.time() + 30, 1, chopSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 60, 1, chopSchedule, [grillSlot])
-        worker.scheduler.enterabs(time.time() + 90, 1, sendToBuildSchedule, [grillSlot, shellType, order, None])
+        worker.scheduler.append([time.time() + 30, chopSchedule, [grillSlot]])
+        worker.scheduler.append([time.time() + 60, chopSchedule, [grillSlot]])
+        worker.scheduler.append([time.time() + 90, sendToBuildSchedule, [grillSlot, shellType, order, None]])
     else:
         wait(15)
         flip(grillSlot)

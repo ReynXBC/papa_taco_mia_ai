@@ -282,13 +282,17 @@ def TakeOrder(count,tutorial = None):
          customer = True
 
    if customer:
-
       pag.leftClick(TAKE_ORDER[0],TAKE_ORDER[1])
       start.gameState = start.State.Ordering
 
-      if count < 8 and not tutorial:
-         worker.scheduler.enterabs(time.time()+37,3,TakeOrderSchedule,[count+1])
+   if count <= 8 and not tutorial:
+     if customer:
+         if count != 8:
+             worker.scheduler.append([time.time() + 10, TakeOrderSchedule,[count+1]])
+     else:
+         worker.scheduler.append([time.time() + 10, TakeOrderSchedule,[count]])
 
+   if customer:
       grl.wait(1)
       GetCustomer()
       #grl.wait(1)

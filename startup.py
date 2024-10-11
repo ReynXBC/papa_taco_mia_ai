@@ -99,7 +99,7 @@ def StartDay(day):
     if day == 60 or day == 40 or day == 30 or day == 20 or day == 10 or day == 80:
         changeHat()
 
-    worker.scheduler.enterabs(time.time(), 1, ord.TakeOrderSchedule, [1])
+    worker.scheduler.append([time.time(), ord.TakeOrderSchedule, [1]])
     print('start day finished')
     worker.runner = True
 

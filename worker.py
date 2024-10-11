@@ -12,13 +12,18 @@ lock = threading.Lock()
 runner = None
 
 # Scheduler for managing task execution times
-scheduler = sched.scheduler(time.time, time.sleep)
+scheduler = []
 
 # List of Priority and Function for a task in format [Priority, Task, Arguements] or in type [float, function, list]
 worker = []
 
 # scheduler which adds the functions to the worker task Queue
 def scheduler_worker():
-    while runner == True:
-        scheduler.run()
-        time.sleep(0.1)
+    while runner:
+      if scheduler:
+         scheduler.sort(key=lambda x: x[0])
+         #print(scheduler[0][0],time.time())
+         if scheduler[0][0] <= time.time():
+            task = scheduler.pop(0)
+            task[1](*task[2])
+      time.sleep(0.1)
