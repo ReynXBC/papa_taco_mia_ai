@@ -10,7 +10,7 @@ import worker
 import time
 import easyocr
 import json
-import torch
+import difflib
 
 class Section(Enum):
    Shell = 1
@@ -235,25 +235,31 @@ def TakeNameScreenShot():
    reader = easyocr.Reader(['en'])
    name = reader.readtext('./temp/name.png')
 
-   #pt.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-   #name = pt.image_to_string(Image.open('./temp/name.png'), config='--psm 7')
-   if name[0][1] == "DORDU":
-      name = "RoBBY"
-   else:
-      name = name[0][1]
+   name = name[0][1].lower()
+
+   if name == "dordu":
+      name = "robby"
+
+   match = difflib.get_close_matches(name, customerStarDict.keys(), n=1, cutoff=0.8)
 
    try:
-      return name
+      return name, match[0]
    except:
-      return None
+      return name, -1
 
 def GetCustomer():
    global customerStarDict
-   name = TakeNameScreenShot()
-   if name != 1:
-      try:
-         customerStarDict[name] = customerStarDict[name] + 1
-      except:
+   name, match = TakeNameScreenShot()
+   
+   if match and match != -1:
+      if match in customerStarDict:
+         customerStarDict[match] += 1
+      else:
+         customerStarDict[match] = 1
+   elif name:
+      if name in customerStarDict:
+         customerStarDict[name] += 1
+      else:
          customerStarDict[name] = 1
 
 def TakeOrderSchedule(count,tutorial = None):
@@ -275,6 +281,7 @@ def TakeOrder(count,tutorial = None):
          grl.wait(3.75)
       pag.leftClick(ORDER_STATION[0],ORDER_STATION[1])
       grl.wait(0.25)
+      grl.completionOrderNumber = 0
    
    customer = False
    for x in range(10):

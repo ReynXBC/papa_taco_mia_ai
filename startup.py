@@ -204,7 +204,11 @@ def GetShopCount(day):
 def EndDay():
     global currentCustomerPoints
     print('ending day')
+
     worker.runner = False
+    worker.scheduler.clear()
+    worker.worker.clear()
+    
     grl.wait(15)
     currentCustomerPoints = GetCustomerPointsNow()
     pag.leftClick(960, 980)
