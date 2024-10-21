@@ -75,28 +75,31 @@ def LoadDict():
         return json.load(f)
 
 def GetStarCount(star):
-   starcount = 0
-   if star == 0:
-      threshold = 1 
-      max = 5
-   elif star == 1:
-      threshold = 5
-      max = 10
-   elif star == 2:
-      threshold = 10
-      max = 15
-   elif star == 3:
-      threshold = 15
+    starcount = 0
+    if star == 0:
+        threshold = 1 
+        max = 5
+    elif star == 1:
+        threshold = 5
+        max = 10
+    elif star == 2:
+        threshold = 10
+        max = 15
+    elif star == 3:
+        threshold = 15
+    else:
+        threshold = 1
+        max = 100000000
       
-   global customerStarDict
-   for customer, visits in zip(customerStarDict.keys(), customerStarDict.values()):
+    global customerStarDict
+    for customer, visits in zip(customerStarDict.keys(), customerStarDict.values()):
       if star == 3:
          if visits >= threshold:
             starcount += 1
       elif visits >= threshold and visits < max:
          starcount += 1
    
-   return starcount
+    return starcount
 
 
 def GetOrder(orders,count,image):
@@ -239,6 +242,9 @@ def TakeNameScreenShot():
 
    if name == "dordu":
       name = "robby"
+   
+   if name == "1io":
+      name = 'jojo'
 
    match = difflib.get_close_matches(name, customerStarDict.keys(), n=1, cutoff=0.8)
 
@@ -293,11 +299,11 @@ def TakeOrder(count,tutorial = None):
       start.gameState = start.State.Ordering
 
    if count <= 8 and not tutorial:
-     if customer:
+      if customer:
          if count != 8:
-             worker.scheduler.append([time.time() + 10, TakeOrderSchedule,[count+1]])
-     else:
-         worker.scheduler.append([time.time() + 10, TakeOrderSchedule,[count]])
+            worker.scheduler.append([time.time() + 20, TakeOrderSchedule,[count+1]])
+      else:
+         worker.scheduler.append([time.time() + 20, TakeOrderSchedule,[count]])
 
    if customer:
       grl.wait(1)

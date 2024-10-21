@@ -8,11 +8,8 @@ import order as ord
 import build as bld
 import numpy as np
 import cv2
-import pytesseract as pt
 import re
-from PIL import Image
 import easyocr
-import torch
 
 
 class State(Enum):
@@ -208,7 +205,7 @@ def EndDay():
     worker.runner = False
     worker.scheduler.clear()
     worker.worker.clear()
-    
+
     grl.wait(15)
     currentCustomerPoints = GetCustomerPointsNow()
     pag.leftClick(960, 980)

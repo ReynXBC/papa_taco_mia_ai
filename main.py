@@ -4,7 +4,7 @@ import worker
 import time
 import pandas as pd
 
-log = pd.DataFrame(columns=['Day','Money','Shop Items Remaining','Customer Points', 'Rank', '0-Star', '1-Star', '2-Star', '3-Star'])
+log = pd.DataFrame(columns=['Day','Money','Shop Items Remaining','Customer Points', 'Rank', '0-Star', '1-Star', '2-Star', '3-Star', 'Total Customers'])
 
 DAY = 1
 start.StartGame()
@@ -12,7 +12,8 @@ DAY = 2
 
 daylog = [DAY-1, start.GetMoney(), start.GetShopCount(DAY-1), start.GetCustomerPoints(), 
               start.GetRank(start.GetCustomerPoints()), start.ord.GetStarCount(0), 
-              start.ord.GetStarCount(1), start.ord.GetStarCount(2), start.ord.GetStarCount(3)]
+              start.ord.GetStarCount(1), start.ord.GetStarCount(2), start.ord.GetStarCount(3),
+              start.ord.GetStarCount(-1)]
 print(daylog)
 log.loc[len(log)] = daylog
 
@@ -22,7 +23,7 @@ log.loc[len(log)] = daylog
 if DAY > 2:
     start.ord.LoadDict()
 
-while DAY <= 2:
+while DAY <= 30:
     daylog = []
 
     scheduler_thread = threading.Thread(target=worker.scheduler_worker, name='scheduler thread')
@@ -47,7 +48,8 @@ while DAY <= 2:
     print('next day is', DAY)
     daylog = [currentDay, start.GetMoney(), start.GetShopCount(currentDay), start.GetCustomerPoints(), 
               start.GetRank(start.GetCustomerPoints()), start.ord.GetStarCount(0), 
-              start.ord.GetStarCount(1), start.ord.GetStarCount(2), start.ord.GetStarCount(3)]
+              start.ord.GetStarCount(1), start.ord.GetStarCount(2), start.ord.GetStarCount(3),
+              start.ord.GetStarCount(-1)]
     print(daylog)
     log.loc[len(log)] = daylog
 

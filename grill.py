@@ -29,6 +29,9 @@ lock = threading.Lock()
 
 grillSlots = [None, None, 'Locked', None, None, 'Locked']
 
+goldSpatula = False
+goldKnife = False
+
 grillSlotDict = {1: [665, 445], 2: [905, 445], 3: [1145, 445], 4: [665, 650], 5: [905, 650], 6: [1145, 650]}
 meatTypeDict = {Meat.Beef: [662, 270], Meat.Steak: [418, 270], Meat.Chicken: [906, 270], Meat.Pork: [1146, 270]}
 shellTypeDict = {Shell.Hard: [830, 810], Shell.Soft: [1160, 810], Shell.Pita: [470, 810]}
@@ -36,10 +39,20 @@ shellTypeDict = {Shell.Hard: [830, 810], Shell.Soft: [1160, 810], Shell.Pita: [4
 completionOrderNumber = 0
 
 def checkPurchases():
-    if not shop.findItem('Extra Burner'):
-        grillSlots[2] = None
-    if not shop.findItem('Extra Burner 2'):
-        grillSlots[5] = None
+    global goldSpatula
+    global goldKnife
+    if grillSlots[2] != None:
+        if not shop.findItem('Extra Burner'):
+            grillSlots[2] = None
+    if grillSlots[5] != None:
+        if not shop.findItem('Extra Burner 2'):
+            grillSlots[5] = None
+    if not goldSpatula:
+        if not shop.findItem('Gold Spatula'):
+            goldSpatula = True
+    if not goldKnife:
+        if not shop.findItem('Gold Knife'):
+            goldKnife = True
 
 
 def wait(num):
@@ -50,60 +63,62 @@ def flipSchedule(grillSlot):
     worker.worker.append([1,flip,[grillSlot]])
 
 def flip(grillSlot):
-    with lock:
+    wait(0.5)
+    pag.leftClick(GRILL_STATION[0], GRILL_STATION[1])
+    start.gameState = start.State.Grill
+    if goldSpatula:
         wait(0.5)
-        pag.leftClick(GRILL_STATION[0], GRILL_STATION[1])
-        start.gameState = start.State.Grill
-        wait(0.5)
-        pag.moveTo(SPATULA_LOCATION[0], SPATULA_LOCATION[1])
-        pag.dragTo(grillSlotDict[grillSlot][0], grillSlotDict[grillSlot][1])
-        print("Flipping Grill Slot", grillSlot)
-        wait(0.1)
+    else:
+        wait(1)
+    pag.moveTo(SPATULA_LOCATION[0], SPATULA_LOCATION[1])
+    pag.dragTo(grillSlotDict[grillSlot][0], grillSlotDict[grillSlot][1])
+    print("Flipping Grill Slot", grillSlot)
+    wait(0.1)
 
 def chopSchedule(grillSlot):
     worker.worker.append([1,chop,[grillSlot]])
 
 def chop(grillSlot):
-    with lock:
+    wait(0.5)
+    print('changing gameState')
+    pag.leftClick(GRILL_STATION[0], GRILL_STATION[1])
+    start.gameState = start.State.Grill
+    if goldKnife:
         wait(0.5)
-        print('changing gameState')
-        pag.leftClick(GRILL_STATION[0], GRILL_STATION[1])
-        start.gameState = start.State.Grill
-        wait(0.5)
-        pag.moveTo(KNIFE_LOCATION[0], KNIFE_LOCATION[1])
-        pag.dragTo(grillSlotDict[grillSlot][0], grillSlotDict[grillSlot][1])
-        print("Chopping Grill Slot", grillSlot)
-        wait(0.1)
+    else:
+        wait(1)
+    pag.moveTo(KNIFE_LOCATION[0], KNIFE_LOCATION[1])
+    pag.dragTo(grillSlotDict[grillSlot][0], grillSlotDict[grillSlot][1])
+    print("Chopping Grill Slot", grillSlot)
+    wait(0.1)
 
 def sendToBuildSchedule(grillSlot, shellType, order, tutorial=None):
     worker.worker.append([1,sendToBuild,[grillSlot,shellType,order,tutorial]])
 
 def sendToBuild(grillSlot, shellType, order, tutorial=None):
     #with lock:
-        global completionOrderNumber
-        if order[0] == 1:
-            completionOrderNumber = 0
-        print('changing gameState')
-        pag.leftClick(GRILL_STATION[0], GRILL_STATION[1])
-        start.gameState = start.State.Grill
-        wait(0.5)
-        pag.moveTo(grillSlotDict[grillSlot][0], grillSlotDict[grillSlot][1])
-        pag.dragTo(shellTypeDict[shellType][0], shellTypeDict[shellType][1])
-        grillSlots[grillSlot - 1] = None
+    global completionOrderNumber
+    print('changing gameState')
+    pag.leftClick(GRILL_STATION[0], GRILL_STATION[1])
+    start.gameState = start.State.Grill
+    wait(0.5)
+    pag.moveTo(grillSlotDict[grillSlot][0], grillSlotDict[grillSlot][1])
+    pag.dragTo(shellTypeDict[shellType][0], shellTypeDict[shellType][1])
+    grillSlots[grillSlot - 1] = None
 
-        wait(1)
-        start.gameState
-        wait(1)
-
-        print("Sending GrillSlot", grillSlot, "to Build")
-        wait(0.25)
-        print(order)
-        print(completionOrderNumber)
-        completionOrderNumber += 1
-        if tutorial:
-            bld.BuildTopping(order, completionOrderNumber, tutorial)
-        else:
-            bld.BuildTopping(order, completionOrderNumber)
+    wait(1)
+    start.gameState
+    wait(1)
+    
+    print("Sending GrillSlot", grillSlot, "to Build")
+    wait(0.25)
+    print(order)
+    print(completionOrderNumber)
+    completionOrderNumber += 1
+    if tutorial:
+        bld.BuildTopping(order, completionOrderNumber, tutorial)
+    else:
+        bld.BuildTopping(order, completionOrderNumber)
 
 
 def GetOpenGrillSlot():
