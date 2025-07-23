@@ -59,8 +59,8 @@ def wait(num):
     # print('waiting for ',num,' seconds')
     time.sleep(num)
 
-def flipSchedule(grillSlot):
-    worker.worker.append([1,flip,[grillSlot]])
+def flipSchedule(grillSlot, order):
+    worker.worker.append([1,flip,[grillSlot], order[0]])
 
 def flip(grillSlot):
     wait(0.5)
@@ -75,8 +75,8 @@ def flip(grillSlot):
     print("Flipping Grill Slot", grillSlot)
     wait(0.1)
 
-def chopSchedule(grillSlot):
-    worker.worker.append([1,chop,[grillSlot]])
+def chopSchedule(grillSlot, order):
+    worker.worker.append([1,chop,[grillSlot], order[0]])
 
 def chop(grillSlot):
     wait(0.5)
@@ -93,7 +93,7 @@ def chop(grillSlot):
     wait(0.1)
 
 def sendToBuildSchedule(grillSlot, shellType, order, tutorial=None):
-    worker.worker.append([1,sendToBuild,[grillSlot,shellType,order,tutorial]])
+    worker.worker.append([1,sendToBuild,[grillSlot,shellType,order,tutorial], order[0]])
 
 def sendToBuild(grillSlot, shellType, order, tutorial=None):
     #with lock:
@@ -155,7 +155,7 @@ def placeMeat(order, grillSlot, tutorial=None):
         cook(order, grillSlot)
 
 def prepcookSchedule(order, grillSlot, tutorial=None):
-    worker.worker.append([1,prepcook, [order, grillSlot, tutorial]])
+    worker.worker.append([1,prepcook, [order, grillSlot, tutorial], order[0]])
 
 def prepcook(order, grillSlot, tutorial=None):
     if not start.gameState == start.State.Grill:
@@ -177,20 +177,20 @@ def cook(order, grillSlot, tutorial=None):
     if tutorial:
         meatType = None
     if meatType == Meat.Beef:
-        worker.scheduler.append([time.time() + 30, flipSchedule, [grillSlot]])
-        worker.scheduler.append([time.time() + 60, sendToBuildSchedule, [grillSlot, shellType, order, None]])
+        worker.scheduler.append([time.time() + 30, flipSchedule, [grillSlot, order], order[0]])
+        worker.scheduler.append([time.time() + 60, sendToBuildSchedule, [grillSlot, shellType, order, None], order[0]])
     elif meatType == Meat.Chicken:
-        worker.scheduler.append([time.time() + 27, chopSchedule, [grillSlot]])
-        worker.scheduler.append([time.time() + 54, flipSchedule, [grillSlot]])
-        worker.scheduler.append([time.time() + 80, sendToBuildSchedule, [grillSlot, shellType, order, None]])
+        worker.scheduler.append([time.time() + 27, chopSchedule, [grillSlot, order], order[0]])
+        worker.scheduler.append([time.time() + 54, flipSchedule, [grillSlot, order], order[0]])
+        worker.scheduler.append([time.time() + 80, sendToBuildSchedule, [grillSlot, shellType, order, None], order[0]])
     elif meatType == Meat.Pork:
-        worker.scheduler.append([time.time() + 27, flipSchedule, [grillSlot]])
-        worker.scheduler.append([time.time() + 54, chopSchedule, [grillSlot]])
-        worker.scheduler.append([time.time() + 80, sendToBuildSchedule, [grillSlot, shellType, order, None]])
+        worker.scheduler.append([time.time() + 27, flipSchedule, [grillSlot, order], order[0]])
+        worker.scheduler.append([time.time() + 54, chopSchedule, [grillSlot, order], order[0]])
+        worker.scheduler.append([time.time() + 80, sendToBuildSchedule, [grillSlot, shellType, order, None], order[0]])
     elif meatType == Meat.Steak:
-        worker.scheduler.append([time.time() + 30, chopSchedule, [grillSlot]])
-        worker.scheduler.append([time.time() + 60, chopSchedule, [grillSlot]])
-        worker.scheduler.append([time.time() + 90, sendToBuildSchedule, [grillSlot, shellType, order, None]])
+        worker.scheduler.append([time.time() + 30, chopSchedule, [grillSlot, order], order[0]])
+        worker.scheduler.append([time.time() + 60, chopSchedule, [grillSlot, order], order[0]])
+        worker.scheduler.append([time.time() + 90, sendToBuildSchedule, [grillSlot, shellType, order, None], order[0]])
     else:
         wait(15)
         flip(grillSlot)

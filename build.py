@@ -106,14 +106,14 @@ def build(order, completionOrderNumber, tutorial=None):
             else:
                 if item:
                     #worker.scheduler.enterabs(time.time() + buffer, 0, addTopping, [item, tutorial])
-                    worker.worker.append([completionOrderNumber + buffer + 2, addTopping, [item,None]])
+                    worker.worker.append([completionOrderNumber + buffer + 2, addTopping, [item,None], order[0]])
                     buffer += 0.1
 
     if tutorial:
         Serve(order[0], 'tutorial')
     else:
         #worker.scheduler.enterabs(time.time() + buffer, 0, Serve, [order[0]])
-        worker.worker.append([completionOrderNumber + 0.9 + 2, Serve, [order[0]]])
+        worker.worker.append([completionOrderNumber + 0.9 + 2, Serve, [order[0]], order[0]])
 
 def Serve(orderNum, tutorial=None):
     if tutorial:

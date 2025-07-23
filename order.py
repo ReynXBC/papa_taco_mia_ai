@@ -268,8 +268,14 @@ def GetCustomer():
       else:
          customerStarDict[name] = 1
 
-def TakeOrderSchedule(count,tutorial = None):
-   worker.worker.append([2,TakeOrder,[count,tutorial]])
+   return name
+
+def SaveOrder(name, count):
+    image = cv2.imread('./orders/order'+ str(count) + '.png')
+    cv2.imwrite('./Orders/CustomerOrders' + name + '.png', image)
+
+def TakeOrderSchedule(count, tutorial = None):
+   worker.worker.append([2,TakeOrder,[count,tutorial], count])
 
 def TakeOrder(count,tutorial = None):
    
@@ -301,13 +307,13 @@ def TakeOrder(count,tutorial = None):
    if count <= 8 and not tutorial:
       if customer:
          if count != 8:
-            worker.scheduler.append([time.time() + 20, TakeOrderSchedule,[count+1]])
+            worker.scheduler.append([time.time() + 20, TakeOrderSchedule,[count+1], count+1])
       else:
-         worker.scheduler.append([time.time() + 20, TakeOrderSchedule,[count]])
+         worker.scheduler.append([time.time() + 20, TakeOrderSchedule,[count], count])
 
    if customer:
       grl.wait(1)
-      GetCustomer()
+      name = GetCustomer()
       #grl.wait(1)
       start.WaitUntilSign()
       start.gameState = start.State.Order
@@ -328,5 +334,7 @@ def TakeOrder(count,tutorial = None):
          grl.prepcook(order,grillSlot=5,tutorial=tutorial)
       else:
          #worker.scheduler.enterabs(time.time(),1,grl.prepcookSchedule,[order,grl.GetOpenGrillSlot()])
-         worker.worker.append([2,grl.prepcook,[order,grl.GetOpenGrillSlot()]])
+         worker.worker.append([2,grl.prepcook,[order,grl.GetOpenGrillSlot()], order[0]])
+
+      SaveOrder(name, count)
       

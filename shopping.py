@@ -1,13 +1,12 @@
 import cv2
-import startup as start
 import pyautogui as pag
 import time
 import numpy as np
-import pytesseract as pt
-from PIL import Image
+import easyocr
 import pandas as pd
 import re
-import grill as grl
+
+currentMoney = 0
 
 itemSlotDict = {
     0: [825, 175],
@@ -49,22 +48,30 @@ def getShop(count):
         # print(Shop)
         return Shop
 
+def getMoneyNow():
+    return currentMoney
 
 def getMoney():
+    global currentMoney
     x, y, width, height = 820, 650, 290, 35  # Specify the region to capture
     screenshot = pag.screenshot(region=(x, y, width, height))
     screenshot_cv = np.array(screenshot)
     screenshot_cv = cv2.cvtColor(screenshot_cv, cv2.COLOR_RGB2BGR)
     # cv2.imshow('sample',screenshot_cv)
     # cv2.waitKey(0)
-    cv2.imwrite('./orders/money.png', screenshot_cv)
-    pt.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    money = pt.image_to_string(Image.open('./orders/money.png'), config='--psm 7')
-    money = re.sub(r'[^\d.]', '', money)
+    cv2.imwrite('./temp/money.png', screenshot_cv)
+    reader = easyocr.Reader(['en'])
+    money = reader.readtext('./temp/money.png')
+    try:
+        money = re.sub(r'[^\d.]', '', money[0][1])
+        money = float(money)
+    except:
+        money = -1
     try:
         money = float(money)
     except:
         money = -1
+    currentMoney = money
     return money
 
 
